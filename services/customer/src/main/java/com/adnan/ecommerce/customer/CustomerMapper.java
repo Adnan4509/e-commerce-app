@@ -2,7 +2,7 @@ package com.adnan.ecommerce.customer;
 
 import org.springframework.stereotype.Service;
 
-//@Service
+@Service
 public class CustomerMapper {
     public Customer toCustomer(CustomerRequest request){
         if(request == null){
@@ -15,5 +15,15 @@ public class CustomerMapper {
                 .email(request.email())
                 .address(request.address())
                 .build();
+    }
+
+    public CustomerResponse fromCustomer(Customer customer) {
+        return new CustomerResponse(
+                customer.getId(),
+                customer.getFirstname(),
+                customer.getLastname(),
+                customer.getEmail(),
+                customer.getAddress()
+        );
     }
 }
