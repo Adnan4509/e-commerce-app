@@ -16,5 +16,8 @@ create table if not exists product
             constraint fk1slkfje8rou8cmn references category
 );
 
-create sequence if not exists categoryIseq increment by 50;
-create sequence if not exists Product_seq increment by 50;
+drop sequence if exists category_seq;
+create sequence category_seq start 1 increment 1;
+
+drop sequence if exists product_seq;
+create sequence product_seq start 1 increment 1;
