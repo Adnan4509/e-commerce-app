@@ -2,16 +2,22 @@ package com.adnan.ecommerce.order;
 
 import com.adnan.ecommerce.customer.CustomerClient;
 import com.adnan.ecommerce.exception.BusinessException;
+import com.adnan.ecommerce.orderline.OrderLineRequest;
+import com.adnan.ecommerce.orderline.OrderLineService;
 import com.adnan.ecommerce.product.ProductClient;
+import com.adnan.ecommerce.product.PurchaseRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class OrderService {
-//    private final OrderRepository repo;
+
+    private final OrderRepository repo;
     private final CustomerClient customerClient;
     private final ProductClient productClient;
+    private final OrderMapper mapper;
+    private final OrderLineService orderLineService;
 
     public Integer createdOrder(OrderRequest request) {
 
@@ -22,8 +28,22 @@ public class OrderService {
 //        step-2: purchase products -> product microservice
         this.productClient.purchaseProducts(request.products());
 
-//        step-3:
+//        step-3: persist order
+        var order = this.repo.save(mapper.toOrder(request));
 
+//        step-4: persist order lines
+        for(PurchaseRequest purchaseRequest: request.products()){
+            orderLineService.SaveOrderLine(
+                    new OrderLineRequest(
+                            null,
+                            order.getId(),
+                            purchaseRequest.productId(),
+                            purchaseRequest.quantity()
+                    )
+            );
+        }
+//        step-5:todo start payment process
+//        step-6: send the order confirmation -> notification microservice(kafka)
     return null;
     }
 }
