@@ -43,6 +43,7 @@ public class OrderService {
             );
         }
 //        step-5:todo start payment process
+
 //        step-6: send the order confirmation -> notification microservice(kafka)
     return null;
     }
