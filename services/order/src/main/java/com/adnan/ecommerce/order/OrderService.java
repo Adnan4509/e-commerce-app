@@ -8,6 +8,7 @@ import com.adnan.ecommerce.orderline.OrderLineRequest;
 import com.adnan.ecommerce.orderline.OrderLineService;
 import com.adnan.ecommerce.product.ProductClient;
 import com.adnan.ecommerce.product.PurchaseRequest;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -68,5 +69,11 @@ public class OrderService {
                 .stream()
                 .map(mapper::fromOrder)
                 .collect(Collectors.toList());
+    }
+
+    public OrderResponse findById(Integer orderId) {
+        return repo.findById(orderId)
+                .map(mapper::fromOrder)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("No order found with the provided ID: %d", orderId)));
     }
 }
