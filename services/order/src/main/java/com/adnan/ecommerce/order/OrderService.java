@@ -6,6 +6,8 @@ import com.adnan.ecommerce.kafka.OrderConfirmation;
 import com.adnan.ecommerce.kafka.OrderProducer;
 import com.adnan.ecommerce.orderline.OrderLineRequest;
 import com.adnan.ecommerce.orderline.OrderLineService;
+import com.adnan.ecommerce.payment.PaymentClient;
+import com.adnan.ecommerce.payment.PaymentRequest;
 import com.adnan.ecommerce.product.ProductClient;
 import com.adnan.ecommerce.product.PurchaseRequest;
 import jakarta.persistence.EntityNotFoundException;
@@ -25,6 +27,7 @@ public class OrderService {
     private final OrderMapper mapper;
     private final OrderLineService orderLineService;
     private final OrderProducer orderProducer;
+    private final PaymentClient paymentClient;
 
     public Integer createdOrder(OrderRequest request) {
 
@@ -49,7 +52,15 @@ public class OrderService {
                     )
             );
         }
-//        step-5:todo start payment process
+//        step-5: start payment process
+        var paymentRequest = new PaymentRequest(
+                request.amount(),
+                request.paymentMethod(),
+                order.getId(),
+                order.getReference(),
+                customer
+        );
+        paymentClient.requestOrderPayment(paymentRequest);
 
 //        step-6: send the order confirmation -> notification microservice(kafka)
         orderProducer.sendOrderConfirmation(
