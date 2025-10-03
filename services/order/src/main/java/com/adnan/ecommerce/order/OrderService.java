@@ -34,13 +34,13 @@ public class OrderService {
 //        step-1: getting customer details -> customer microservice
         var customer = this.customerClient.findCustomerById(request.customerId())
                 .orElseThrow(() -> new BusinessException("Cannot create order:: No Customer exists with the given Id"));
-
+        System.out.println("customer done");
 //        step-2: purchase products -> product microservice
         var purchasedProducts = this.productClient.purchaseProducts(request.products());
-
+        System.out.println("product done");
 //        step-3: persist order
         var order = this.repo.save(mapper.toOrder(request));
-
+        System.out.println("order save");
 //        step-4: persist order lines
         for(PurchaseRequest purchaseRequest: request.products()){
             orderLineService.SaveOrderLine(
@@ -52,6 +52,7 @@ public class OrderService {
                     )
             );
         }
+        System.out.println("order line done");
 //        step-5: start payment process
         var paymentRequest = new PaymentRequest(
                 request.amount(),
@@ -61,7 +62,7 @@ public class OrderService {
                 customer
         );
         paymentClient.requestOrderPayment(paymentRequest);
-
+        System.out.println("payment done");
 //        step-6: send the order confirmation -> notification microservice(kafka)
         orderProducer.sendOrderConfirmation(
                 new OrderConfirmation(

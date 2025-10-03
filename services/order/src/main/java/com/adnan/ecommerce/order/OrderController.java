@@ -23,7 +23,7 @@ public class OrderController {
         return ResponseEntity.ok(service.findAll());
     }
 
-    @GetMapping("/{orderId")
+    @GetMapping("/{orderId}")
     public ResponseEntity<OrderResponse> findById(
             @PathVariable Integer orderId
     ) {
